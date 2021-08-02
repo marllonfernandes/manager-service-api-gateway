@@ -1,35 +1,35 @@
-//index.js
-const httpProxy = require('express-http-proxy');
-const express = require('express');
-const app = express();
-const bodyParser = require('body-parser')
-var logger = require('morgan');
+(async() => {
 
-const allowCors = function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*"); // colocar os dominios permitidos | ex: 127.0.0.1:3000
-    res.header("Access-Control-Allow-Headers", "*");
-    res.header("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE");
-    res.header("Access-Control-Allow-Credentials", "true");
-    next();
-}
-app.use(allowCors)
-app.use(logger('dev'));
-app.use(bodyParser.urlencoded({ extended: true }))
-app.use(bodyParser.json())
+    require('dotenv-safe').config({
+        allowEmptyValues: true,
+        path: process.env.NODE_ENV === 'production' ? '.env' : '.env.develop',
+        example: '.env.example',
+    })
 
-app.use(httpProxy('http://localhost:2375/', {
-    proxyErrorHandler: (err, res, next) => {
-        switch (err && err.code) {
-            case 'ECONNRESET':
-                { return res.status(405).json({ message: 'The method specified in the request is not allowed.' }); }
-            case 'ECONNREFUSED':
-                { return res.status(503).json({ message: 'The request was not completed. The server is temporarily overloading or down.' }); }
-            default:
-                { next(err); }
-        }
+    const express = require('express')
+    const app = express()
+    const { cors } = require('./src/core/cors')
+    const { routesProxy } = require('./src/routes/load')
+    const { setupLogging } = require("./src/core/logging")
+    const { setupRateLimit } = require("./src/core/ratelimit")
+    const { setupCreditCheck } = require("./src/core/creditcheck")
+    const { setupProxies } = require("./src/core/proxy")
+    const auth = require("./src/core/auth").auth
+    const port = process.env.PORT || 4434
+
+    const routes = await routesProxy()
+
+    if (routes) {
+        app.use(auth)
+        app.use(cors)
+        setupLogging(app)
+        setupRateLimit(app, JSON.parse(routes))
+        setupCreditCheck(app, JSON.parse(routes))
+        setupProxies(app, JSON.parse(routes))
+
+        app.listen(port, async() => {
+            console.log(`API Gateway running in port ${port}!`)
+        })
     }
-}));
 
-app.listen(4000, () => {
-    console.log('API Gateway running!');
-});
+})()

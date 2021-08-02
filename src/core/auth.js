@@ -3,7 +3,6 @@ require('dotenv-safe').config({
     path: process.env.NODE_ENV === 'production' ? '.env' : '.env.develop',
     example: '.env.example'
 })
-const app = require('../../app')
 const db = require('../db/connection')
 
 const auth = async(req, res, next) => {

@@ -8,14 +8,15 @@
 
     const express = require('express')
     const app = express()
-    const { cors } = require('./src/core/cors')
-    const { routesProxy } = require('./src/routes/load')
-    const { setupLogging } = require("./src/core/logging")
-    const { setupRateLimit } = require("./src/core/ratelimit")
-    const { setupCreditCheck } = require("./src/core/creditcheck")
-    const { setupProxies } = require("./src/core/proxy")
-    const auth = require("./src/core/auth").auth
+    const { cors } = require('./core/cors')
+    const { routesProxy } = require('./routes/load')
+    const { setupLogging } = require("./core/logging")
+    const { setupRateLimit } = require("./core/ratelimit")
+    const { setupCreditCheck } = require("./core/creditcheck")
+    const { setupProxies } = require("./core/proxy")
+    const auth = require("./core/auth").auth
     const port = process.env.PORT || 4434
+    const logger = require('./logger')
 
     const routes = await routesProxy()
 
@@ -28,7 +29,7 @@
         setupProxies(app, JSON.parse(routes))
 
         app.listen(port, async() => {
-            console.log(`API Gateway running in port ${port}!`)
+            logger.info(`API Gateway running in port ${port}!`)
         })
     }
 

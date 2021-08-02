@@ -20,7 +20,8 @@
         "http-proxy-middleware": "^2.0.1",
         "keycloak-connect": "^14.0.0",
         "mongoose": "^5.13.3",
-        "morgan": "^1.10.0"
+        "morgan": "^1.10.0",
+        "winston": "^3.3.3"
     },
     "devDependencies": {
         "cross-env": "^7.0.3"

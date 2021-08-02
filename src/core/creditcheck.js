@@ -4,9 +4,11 @@ require('dotenv-safe').config({
     example: '.env.example'
 })
 
+const logger = require('../logger')
+
 const checkCredit = (req) => {
     return new Promise((resolve, reject) => {
-        console.log("Checking credit with token", req.headers["authorization"]);
+        logger.info("Checking credit with token", req.headers["authorization"]);
         setTimeout(() => {
             reject('No sufficient credits');
         }, 500);

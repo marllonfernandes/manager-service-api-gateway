@@ -4,6 +4,7 @@ require('dotenv-safe').config({
     example: '.env.example'
 })
 
+const logger = require('../logger')
 const db = require('../db/connection')
 
 const defaulDocNew = {
@@ -86,14 +87,14 @@ async function routesProxy() {
             if (validError.length <= 0) {
                 await createDefault(defaulDocNew)
             } else {
-                console.log('Unable to save default values, errors found:')
-                console.log(validError)
+                logger.info('Unable to save default values, errors found:')
+                logger.info(validError)
             }
             data = JSON.stringify(await get())
         }
         return data
     } catch (error) {
-        console.log(error.message)
+        logger.error(error.message)
     }
 }
 

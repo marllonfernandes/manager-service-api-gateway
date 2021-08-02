@@ -4,6 +4,7 @@ require('dotenv-safe').config({
     example: '.env.example'
 })
 
+const logger = require('../logger')
 const mongoose = require("mongoose")
 const options = {
     useNewUrlParser: true,
@@ -21,10 +22,10 @@ const options = {
 mongoose.Promise = global.Promise;
 mongoose.connect(`mongodb://${process.env.URL_DB}:${process.env.PORT_DB}/${process.env.NAME_DB}`, options)
     .then(() => {
-        console.log('MongoDb connected!')
+        logger.info('MongoDb connected!')
     })
     .catch((err) => {
-        console.log(err.message)
+        logger.error(err.message)
         process.exit(2)
     })
 
